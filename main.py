@@ -1,33 +1,38 @@
-#Задание 1
-#Создайте новое приложение Flask,
-# которое будет отображать текущие дату и время на главной странице.
-#Задание 2
-#Создайте новое приложение Flask, создайте структуру проекта с папками static и templates,
-# в папке templates должны быть 3 html файла: index, blog, contacts (главная страница, страница блога и контакты).
-# Заполните их информацией и выведите силами flask сервера, используя функцию render_template()
-#Обязательно на всех страницах сделайте меню, которое будет работать именно при запуске проекта через flask
-from flask import Flask, render_template_string
-from datetime import datetime
+from flask import Flask, render_template, redirect, url_for
 
 app = Flask(__name__)
 
 @app.route('/')
 def home():
-    current_time = datetime.now().strftime("%Y-%m-%d %H:%M:%S")
-    return render_template_string('''
-        <!doctype html>
-        <html lang="en">
-        <head>
-            <meta charset="UTF-8">
-            <meta name="viewport" content="width=device-width, initial-scale=1.0">
-            <title>Текущая дата и время</title>
-        </head>
-        <body>
-            <h1>Текущая дата и время:</h1>
-            <p>{{ time }}</p>
-        </body>
-        </html>
-    ''', time=current_time)
+    return render_template('index.html')
+
+@app.route('/blog')
+def blog():
+    # Перенаправляем на страницу товара с id=1
+    return redirect(url_for('product', product_id=1))
+
+@app.route('/contacts')
+def contacts():
+    return render_template('contacts.html')
+
+@app.route('/product/<int:product_id>')
+def product(product_id):
+    # Пример данных о товаре
+    products = {
+        1: {
+            "title": "Товар 1",
+            "description": "Подробное описание товара 1. Здесь вы можете узнать все подробности о нашем товаре, его характеристиках и преимуществах.",
+            "image": "Снимок экрана 2024-08-08 в 05.53.14.png"
+        },
+        2: {
+            "title": "Товар 2",
+            "description": "Подробное описание товара 2. Этот товар отличается своими уникальными особенностями и характеристиками.",
+            "image": "Снимок экрана 2024-08-08 в 05.55.04.png"
+        }
+    }
+    product = products.get(product_id, {})
+    return render_template('product.html', product=product)
 
 if __name__ == '__main__':
     app.run(debug=True)
+
